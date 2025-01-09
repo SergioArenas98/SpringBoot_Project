@@ -49,8 +49,8 @@ class NurseControllerTest {
         when(nurseRepository.findByUser("aliceUser")).thenReturn(testNurse);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/nurse/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"user\":\"aliceUser\", \"password\":\"password123\"}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"user\":\"aliceUser\", \"password\":\"password123\"}"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
     }
@@ -60,8 +60,8 @@ class NurseControllerTest {
         when(nurseRepository.findByUser("aliceUser")).thenReturn(testNurse);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/nurse/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"user\":\"aliceUser\", \"password\":\"wrongPassword\"}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"user\":\"aliceUser\", \"password\":\"wrongPassword\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string("false"));
     }
@@ -83,28 +83,29 @@ class NurseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nurseId", is(1)));
     }
-    
 
-    /*@Test
-    void updateNurse_ShouldReturnUpdatedNurse() throws Exception {
-        when(nurseRepository.findById(1)).thenReturn(Optional.of(testNurse));
-        when(nurseRepository.save(any(Nurse.class))).thenReturn(testNurse);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/nurse/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"UpdatedName\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("UpdatedName")));
-    }*/
+    /*
+     * @Test
+     * void updateNurse_ShouldReturnUpdatedNurse() throws Exception {
+     * when(nurseRepository.findById(1)).thenReturn(Optional.of(testNurse));
+     * when(nurseRepository.save(any(Nurse.class))).thenReturn(testNurse);
+     * 
+     * mockMvc.perform(MockMvcRequestBuilders.put("/nurse/1")
+     * .contentType(MediaType.APPLICATION_JSON)
+     * .content("{\"name\":\"UpdatedName\"}"))
+     * .andExpect(status().isOk())
+     * .andExpect(jsonPath("$.name", is("UpdatedName")));
+     * }
+     */
 
     @Test
     void createNurse_ShouldReturnCreatedNurse() throws Exception {
         when(nurseRepository.findByName("Alice")).thenReturn(null);
         when(nurseRepository.save(any(Nurse.class))).thenReturn(testNurse);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/nurse/createNurse")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"Alice\", \"user\":\"aliceUser\", \"password\":\"password123\"}"))
+        mockMvc.perform(MockMvcRequestBuilders.post("/nurse/new")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Alice\", \"user\":\"aliceUser\", \"password\":\"password123\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is("Alice")));
     }
@@ -113,26 +114,26 @@ class NurseControllerTest {
     void createNurse_ExistingName_ShouldReturnConflict() throws Exception {
         when(nurseRepository.findByName("Alice")).thenReturn(testNurse);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/nurse/createNurse")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"Alice\", \"user\":\"aliceUser\", \"password\":\"password123\"}"))
+        mockMvc.perform(MockMvcRequestBuilders.post("/nurse/new")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Alice\", \"user\":\"aliceUser\", \"password\":\"password123\"}"))
                 .andExpect(status().isConflict());
     }
 
     @Test
     void deleteNurse_ShouldReturnNoContent() throws Exception {
-        when(nurseRepository.findByName("Alice")).thenReturn(testNurse);
+        when(nurseRepository.findById(1)).thenReturn(Optional.of(testNurse));
         Mockito.doNothing().when(nurseRepository).delete(testNurse);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/nurse/Alice"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/nurse/1"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void deleteNurse_NurseNotFound_ShouldReturnNotFound() throws Exception {
-        when(nurseRepository.findByName("NonExisting")).thenReturn(null);
+        when(nurseRepository.findById(2)).thenReturn(Optional.empty());
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/nurse/NonExisting"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/nurse/2"))
                 .andExpect(status().isNotFound());
     }
 }
