@@ -32,7 +32,7 @@ public class NurseController {
 	}
 
 	@PostMapping("/login")
-	public @ResponseBody ResponseEntity<Boolean> login(@RequestBody Nurse loginNurse) {
+	public @ResponseBody ResponseEntity<Nurse> login(@RequestBody Nurse loginNurse) {
 		// Get nurse by user's name
 		Nurse nurse = nurseRepository.findByUser(loginNurse.getUser());
 
@@ -40,10 +40,10 @@ public class NurseController {
 		if (nurse != null) {
 			// Check password
 			if (nurse.getPassword().equals(loginNurse.getPassword())) {
-				return ResponseEntity.ok(true);
+				return ResponseEntity.ok(nurse);
 			}
 		}
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(nurse);
 	}
 
 	@GetMapping("/name/{name}")
